@@ -1,6 +1,6 @@
 import React from 'react';
-import { ReaderSettings, Theme, ReaderFont } from '../types';
-import { X, Sun, Moon, Coffee, Layout, Palette } from 'lucide-react';
+import { ReaderSettings, Theme, ReaderFont, ReaderMode } from '../types';
+import { X, Sun, Moon, Coffee, Layout, Palette, Zap, LayoutList } from 'lucide-react';
 
 interface SettingsPanelProps {
   settings: ReaderSettings;
@@ -58,7 +58,35 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, onUpdate, onClo
 
       <div className="space-y-12 overflow-y-auto pr-2 no-scrollbar pb-12">
         <section>
-          <label className="text-xs font-bold uppercase tracking-widest opacity-50 mb-4 block">Reading Mode</label>
+          <label className="text-xs font-bold uppercase tracking-widest opacity-50 mb-4 block">Reader Mode</label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => onUpdate({ mode: ReaderMode.Normal })}
+              className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
+                settings.mode === ReaderMode.Normal 
+                  ? accentColor 
+                  : 'border-transparent hover:bg-black/5'
+              }`}
+            >
+              <LayoutList className={`w-5 h-5 ${settings.mode === ReaderMode.Normal ? accentText : ''}`} />
+              <span className="text-xs font-medium">Standard</span>
+            </button>
+            <button
+              onClick={() => onUpdate({ mode: ReaderMode.RSVP })}
+              className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
+                settings.mode === ReaderMode.RSVP 
+                  ? accentColor 
+                  : 'border-transparent hover:bg-black/5'
+              }`}
+            >
+              <Zap className={`w-5 h-5 ${settings.mode === ReaderMode.RSVP ? accentText : ''}`} />
+              <span className="text-xs font-medium">Focus (RSVP)</span>
+            </button>
+          </div>
+        </section>
+
+        <section>
+          <label className="text-xs font-bold uppercase tracking-widest opacity-50 mb-4 block">Theme Color</label>
           <div className="grid grid-cols-2 gap-2">
             {themes.map(t => (
               <button
@@ -89,7 +117,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, onUpdate, onClo
               }`}
             >
               <span className="block text-2xl font-sans leading-none mb-1 font-bold">Clean</span>
-              <span className="text-[10px] font-bold uppercase opacity-60">Sans Serif</span>
+              <span className="text-[10px] font-bold uppercase opacity-60">Lexend</span>
             </button>
             <button
               onClick={() => onUpdate({ font: ReaderFont.Classic })}
@@ -100,7 +128,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, onUpdate, onClo
               }`}
             >
               <span className="block text-2xl font-serif leading-none mb-1 font-bold">Classic</span>
-              <span className="text-[10px] font-bold uppercase opacity-60">Modern Serif</span>
+              <span className="text-[10px] font-bold uppercase opacity-60">Literata</span>
             </button>
           </div>
         </section>
@@ -139,7 +167,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, onUpdate, onClo
       </div>
 
       <div className="mt-auto pt-8 border-t border-black/5 flex flex-col items-center gap-2 opacity-30">
-        <span className="text-[10px] tracking-[0.2em] font-black uppercase">Lumina Reader v2.6</span>
+        <span className="text-[10px] tracking-[0.2em] font-black uppercase">OptimalReader v3.0</span>
       </div>
     </div>
   );

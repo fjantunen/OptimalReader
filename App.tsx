@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Theme, ReaderFont, ReaderSettings } from './types';
+import { Theme, ReaderFont, ReaderSettings, ReaderMode } from './types';
 import { PRELOAD_CONTENT } from './constants';
 import Reader from './components/Reader';
 import SettingsPanel from './components/SettingsPanel';
 import InputArea from './components/InputArea';
-import { Settings, Play, Pause, Edit2, Plus, Minus, SkipBack, SkipForward } from 'lucide-react';
+import RSVPReader from './components/RSVPReader';
+import { Settings, Play, Pause, Edit2, Plus, Minus, SkipBack, SkipForward, Zap } from 'lucide-react';
 
 const App: React.FC = () => {
   const [content, setContent] = useState(PRELOAD_CONTENT);
@@ -20,6 +21,7 @@ const App: React.FC = () => {
     fontSize: 22,
     lineHeight: 1.6,
     ttsSpeed: 1.0,
+    mode: ReaderMode.Normal,
   });
 
   const sentencesRef = useRef<string[]>([]);
@@ -67,8 +69,8 @@ const App: React.FC = () => {
       utterance.onboundary = (event) => {
         if (event.name === 'word' && isPlayingRef.current) {
           const textBefore = sentence.substring(0, event.charIndex);
-          const wordCount = textBefore.trim().split(/\s+/).filter(w => w.length > 0).length;
-          setCurrentWordIndex(wordCount);
+          const wordsBefore = textBefore.trim().split(/\s+/).filter(w => w.length > 0);
+          setCurrentWordIndex(wordsBefore.length);
         }
       };
 
@@ -145,7 +147,6 @@ const App: React.FC = () => {
   // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts if user is typing in the input area
       if (isEditing) return;
 
       switch (e.code) {
@@ -223,9 +224,22 @@ const App: React.FC = () => {
     [Theme.Dark]: 'bg-indigo-600',
   }[settings.theme];
 
+  const currentSentenceWords = useMemo(() => {
+    if (currentSentenceIndex < 0 || !sentencesRef.current[currentSentenceIndex]) return [];
+    return sentencesRef.current[currentSentenceIndex].split(/\s+/).filter(w => w.length > 0);
+  }, [currentSentenceIndex, sentencesRef.current]);
+
+  const isRSVPActive = settings.mode === ReaderMode.RSVP && isPlaying;
+  const currentWpm = Math.round(settings.ttsSpeed * 200);
+
   return (
     <div className={`min-h-screen transition-colors duration-500 flex flex-col ${themeClasses[settings.theme]}`}>
-      <main className="max-w-3xl mx-auto px-6 pt-12 pb-32 md:pt-20 relative flex-grow w-full">
+      {/* Background Dimming for RSVP Focus Mode */}
+      <div 
+        className={`fixed inset-0 z-[35] bg-black/60 backdrop-blur-[4px] transition-opacity duration-500 pointer-events-none ${isRSVPActive ? 'opacity-100' : 'opacity-0'}`} 
+      />
+
+      <main className={`max-w-3xl mx-auto px-6 pt-12 pb-32 md:pt-20 relative flex-grow w-full transition-all duration-700 ${isRSVPActive ? 'scale-[0.96] blur-[6px] opacity-20' : ''}`}>
         {isEditing ? (
           <InputArea 
             value={content} 
@@ -252,10 +266,24 @@ const App: React.FC = () => {
         )}
       </main>
 
-      <div className={`reader-bottom-bar ${barBgClasses}`}>
-        <div className="w-full h-1 bg-black/5 overflow-hidden">
+      {/* RSVP POP-OUT PANEL - Positioned exactly above the bottom bar */}
+      <div 
+        className={`fixed bottom-24 md:bottom-28 left-0 right-0 z-40 transition-all duration-500 ease-out transform ${
+          isRSVPActive ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'
+        }`}
+      >
+        <RSVPReader 
+          words={currentSentenceWords}
+          currentWordIndex={currentWordIndex}
+          settings={settings}
+        />
+      </div>
+
+      <div className={`reader-bottom-bar ${barBgClasses} h-24 md:h-28 z-50`}>
+        {/* Progress Bar */}
+        <div className="w-full h-1.5 bg-black/5 overflow-hidden">
           <div 
-            className={`h-full transition-all duration-300 ease-out rounded-r-full ${{
+            className={`h-full transition-all duration-300 ease-out rounded-r-full shadow-sm ${{
               [Theme.Light]: 'bg-indigo-600',
               [Theme.Sepia]: 'bg-indigo-600',
               [Theme.Dark]: 'bg-indigo-500',
@@ -265,7 +293,7 @@ const App: React.FC = () => {
           />
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 h-20 md:h-24 flex items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-6 h-full flex items-center justify-between gap-4">
           <div className="flex items-center gap-1 sm:gap-4 shrink-0">
             <div className="flex flex-col items-start px-2">
               <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">Progress</span>
@@ -276,7 +304,7 @@ const App: React.FC = () => {
           </div>
 
           <div className="flex flex-col items-center gap-1 flex-1 max-w-sm">
-            <div className="flex items-center gap-1 sm:gap-4 w-full justify-center">
+            <div className="flex items-center gap-2 sm:gap-6 w-full justify-center">
               <button 
                 onClick={() => handleSkipBlock('prev')}
                 className={`p-2 rounded-full hover:bg-black/5 transition-colors ${iconColor}`}
@@ -325,21 +353,37 @@ const App: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-3 text-[9px] font-bold uppercase tracking-widest opacity-50">
-              <span>{settings.ttsSpeed.toFixed(1)}x Speed</span>
+              <span className="flex items-center gap-2">
+                <span>{settings.ttsSpeed.toFixed(1)}x</span>
+                <span className="w-1 h-1 rounded-full bg-current opacity-30"></span>
+                <span>{currentWpm} WPM</span>
+              </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-4 shrink-0">
+            <button
+              onClick={() => updateSettings({ mode: settings.mode === ReaderMode.Normal ? ReaderMode.RSVP : ReaderMode.Normal })}
+              className={`p-3 rounded-xl transition-all shadow-sm ${
+                settings.mode === ReaderMode.RSVP 
+                  ? `${playBtnColor} text-white scale-110 shadow-indigo-500/20` 
+                  : 'bg-black/5 opacity-60 hover:opacity-100 hover:bg-black/10'
+              }`}
+              title={settings.mode === ReaderMode.RSVP ? "Disable Focus Mode" : "Enable Focus Mode (RSVP)"}
+            >
+              <Zap className={`w-6 h-6 ${settings.mode === ReaderMode.RSVP ? 'fill-current' : ''}`} />
+            </button>
+
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="p-2.5 rounded-xl hover:bg-black/5 transition-colors"
+              className="p-2.5 rounded-xl hover:bg-black/5 transition-colors opacity-60 hover:opacity-100"
               title="Edit Content"
             >
               <Edit2 className="w-5 h-5" />
             </button>
             <button
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className="p-2.5 rounded-xl hover:bg-black/5"
+              className="p-2.5 rounded-xl hover:bg-black/5 opacity-60 hover:opacity-100"
               title="Appearance Settings"
             >
               <Settings className="w-5 h-5" />

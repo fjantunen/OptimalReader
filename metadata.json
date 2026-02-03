@@ -1,5 +1,5 @@
 {
-  "name": "Lumina Ebook Reader",
-  "description": "A modern, high-readability ebook reader with variable speed TTS, synchronized text highlighting, and multiple themes including sepia and dyslexia-friendly fonts.",
+  "name": "OptimalReader",
+  "description": "A high-performance Markdown eReader with synchronized TTS and RSVP focus mode",
   "requestFramePermissions": []
 }

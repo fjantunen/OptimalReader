@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumina Ebook Reader</title>
+    <title>OptimalReader | Modern Ebook Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,6 +59,17 @@
             box-shadow: 0 0 0 2px #d84315;
         }
 
+        /* RSVP Ticker Specifics */
+        .rsvp-orp {
+            color: #ef4444; /* Standard Red ORP */
+        }
+        .amber .rsvp-orp {
+            color: #d84315;
+        }
+        .dark .rsvp-orp {
+            color: #f87171;
+        }
+
         /* Blockquote Styling */
         .prose blockquote {
             border-left: 4px solid #4f46e5 !important;
@@ -77,7 +88,6 @@
         .sepia .prose blockquote { border-left-color: rgba(91,70,54,0.4) !important; }
         .amber .prose blockquote { border-left-color: #bf360c !important; }
 
-        /* Reader Tables */
         .reader-table {
             width: 100%;
             border-collapse: collapse;
@@ -90,28 +100,6 @@
             padding: 12px 16px;
             text-align: left;
             color: inherit;
-        }
-        .reader-table th {
-            font-weight: 700;
-            background-color: rgba(0,0,0,0.03);
-            border-bottom: 2px solid rgba(0,0,0,0.1) !important;
-        }
-        .reader-table tr:nth-child(even) {
-            background-color: rgba(0,0,0,0.015);
-        }
-
-        .dark .reader-table th, .dark .reader-table td {
-            border-color: rgba(255,255,255,0.1) !important;
-        }
-        .dark .reader-table th {
-            background-color: rgba(255,255,255,0.05);
-        }
-
-        .amber .reader-table th, .amber .reader-table td {
-            border-color: rgba(78,52,46,0.15) !important;
-        }
-        .amber .reader-table th {
-            background-color: rgba(78,52,46,0.05);
         }
 
         .no-scrollbar::-webkit-scrollbar {
