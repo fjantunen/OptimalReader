@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina Ebook Reader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600;7..72,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        .font-clean { font-family: 'Lexend', sans-serif !important; }
+        .font-classic { font-family: 'Literata', serif !important; }
+        .font-mono-custom { font-family: 'Fira Code', monospace !important; }
+
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+
+        /* GitHub-style Markdown Borders */
+        .markdown-h1, .markdown-h2 {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding-bottom: 0.3em;
+        }
+        .dark .markdown-h1, .dark .markdown-h2 {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sepia .markdown-h1, .sepia .markdown-h2 {
+            border-bottom: 1px solid rgba(91,70,54,0.15);
+        }
+        .thisisfine .markdown-h1, .thisisfine .markdown-h2 {
+            border-bottom: 1px solid rgba(78,52,46,0.2);
+        }
+
+        /* Inverse Highlighting */
+        .highlight-active {
+            background-color: #4f46e5;
+            color: #ffffff !important;
+            border-radius: 4px;
+            box-shadow: 0 0 0 2px #4f46e5;
+            transition: all 0.1s ease;
+        }
+
+        .dark .highlight-active {
+            background-color: #818cf8;
+            color: #030712 !important;
+            box-shadow: 0 0 0 2px #818cf8;
+        }
+
+        .sepia .highlight-active {
+            background-color: #5b4636;
+            color: #f4ecd8 !important;
+            box-shadow: 0 0 0 2px #5b4636;
+        }
+
+        .thisisfine .highlight-active {
+            background-color: #d84315;
+            color: #ffffff !important;
+            box-shadow: 0 0 0 2px #d84315;
+        }
+
+        /* Blockquote Styling */
+        .prose blockquote {
+            border-left: 4px solid #4f46e5 !important;
+            color: inherit !important;
+            opacity: 0.9;
+            padding: 0 1.5rem !important;
+            font-style: italic;
+            margin: 2rem 0 !important;
+            quotes: none !important;
+        }
+        .prose blockquote::before, .prose blockquote::after {
+            content: none !important;
+        }
+        
+        .dark .prose blockquote { border-left-color: #818cf8 !important; }
+        .sepia .prose blockquote { border-left-color: rgba(91,70,54,0.4) !important; }
+        .thisisfine .prose blockquote { border-left-color: #bf360c !important; }
+
+        /* Reader Tables */
+        .reader-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            color: inherit;
+            font-size: 0.95em;
+        }
+        .reader-table th, .reader-table td {
+            border: 1px solid rgba(0,0,0,0.1) !important;
+            padding: 12px 16px;
+            text-align: left;
+            color: inherit;
+        }
+        .reader-table th {
+            font-weight: 700;
+            background-color: rgba(0,0,0,0.03);
+            border-bottom: 2px solid rgba(0,0,0,0.1) !important;
+        }
+        .reader-table tr:nth-child(even) {
+            background-color: rgba(0,0,0,0.015);
+        }
+
+        .dark .reader-table th, .dark .reader-table td {
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+        .dark .reader-table th {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .thisisfine .reader-table th, .thisisfine .reader-table td {
+            border-color: rgba(78,52,46,0.15) !important;
+        }
+        .thisisfine .reader-table th {
+            background-color: rgba(78,52,46,0.05);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .reader-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+        .dark .reader-bottom-bar {
+            box-shadow: 0 -4px 30px rgba(0,0,0,0.3);
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0"
+  }
+}
+</script>
+</head>
+<body class="transition-colors duration-300">
+    <div id="root"></div>
+</body>
+</html>
