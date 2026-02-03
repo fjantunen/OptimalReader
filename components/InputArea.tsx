@@ -15,11 +15,11 @@ const InputArea: React.FC<InputAreaProps> = ({ value, onChange, onClose, theme }
     [Theme.Light]: 'bg-gray-50 text-gray-900 border-gray-200',
     [Theme.Sepia]: 'bg-[#efe5cd] text-[#5b4636] border-[#e0d6c0]',
     [Theme.Dark]: 'bg-gray-900 text-gray-200 border-gray-800',
-    [Theme.ThisIsFine]: 'bg-[#ffcc80] text-[#4e342e] border-[#f57c00]',
+    [Theme.Amber]: 'bg-[#ffcc80] text-[#4e342e] border-[#f57c00]',
   }[theme];
 
   const btnBg = {
-    [Theme.ThisIsFine]: 'bg-[#d84315] hover:bg-[#bf360c]',
+    [Theme.Amber]: 'bg-[#d84315] hover:bg-[#bf360c]',
     [Theme.Light]: 'bg-indigo-600 hover:bg-indigo-700',
     [Theme.Sepia]: 'bg-indigo-600 hover:bg-indigo-700',
     [Theme.Dark]: 'bg-indigo-600 hover:bg-indigo-700',

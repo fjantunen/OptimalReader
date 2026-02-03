@@ -2,7 +2,7 @@ export enum Theme {
   Light = 'light',
   Sepia = 'sepia',
   Dark = 'dark',
-  ThisIsFine = 'thisisfine',
+  Amber = 'amber',
 }
 
 export enum ReaderFont {

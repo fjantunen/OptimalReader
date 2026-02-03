@@ -1,6 +1,6 @@
 import React from 'react';
 import { ReaderSettings, Theme, ReaderFont } from '../types';
-import { X, Sun, Moon, Coffee, Layout, Flame } from 'lucide-react';
+import { X, Sun, Moon, Coffee, Layout, Palette } from 'lucide-react';
 
 interface SettingsPanelProps {
   settings: ReaderSettings;
@@ -13,32 +13,32 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, onUpdate, onClo
     { id: Theme.Light, icon: Sun, label: 'Light' },
     { id: Theme.Sepia, icon: Coffee, label: 'Sepia' },
     { id: Theme.Dark, icon: Moon, label: 'Dark' },
-    { id: Theme.ThisIsFine, icon: Flame, label: 'Toasty' },
+    { id: Theme.Amber, icon: Palette, label: 'Amber' },
   ];
 
   const panelBg = {
     [Theme.Light]: 'bg-white text-gray-900 border-l border-gray-100',
     [Theme.Sepia]: 'bg-[#f4ecd8] text-[#5b4636] border-l border-[#e0d6c0]',
     [Theme.Dark]: 'bg-gray-950 text-gray-200 border-l border-gray-800',
-    [Theme.ThisIsFine]: 'bg-[#ffcc80] text-[#4e342e] border-l border-[#f57c00]',
+    [Theme.Amber]: 'bg-[#ffcc80] text-[#4e342e] border-l border-[#f57c00]',
   }[settings.theme];
 
   const accentColor = {
-    [Theme.ThisIsFine]: 'border-[#d84315] bg-[#fff3e0]',
+    [Theme.Amber]: 'border-[#d84315] bg-[#fff3e0]',
     [Theme.Light]: 'border-indigo-600 bg-indigo-50/50',
     [Theme.Sepia]: 'border-indigo-600 bg-indigo-50/50',
     [Theme.Dark]: 'border-indigo-600 bg-indigo-50/50',
   }[settings.theme];
 
   const accentText = {
-    [Theme.ThisIsFine]: 'text-[#d84315]',
+    [Theme.Amber]: 'text-[#d84315]',
     [Theme.Light]: 'text-indigo-600',
     [Theme.Sepia]: 'text-indigo-600',
     [Theme.Dark]: 'text-indigo-600',
   }[settings.theme];
 
   const rangeAccent = {
-    [Theme.ThisIsFine]: 'accent-[#d84315]',
+    [Theme.Amber]: 'accent-[#d84315]',
     [Theme.Light]: 'accent-indigo-600',
     [Theme.Sepia]: 'accent-indigo-600',
     [Theme.Dark]: 'accent-indigo-600',
@@ -139,7 +139,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, onUpdate, onClo
       </div>
 
       <div className="mt-auto pt-8 border-t border-black/5 flex flex-col items-center gap-2 opacity-30">
-        <span className="text-[10px] tracking-[0.2em] font-black uppercase">Lumina Reader v2.5</span>
+        <span className="text-[10px] tracking-[0.2em] font-black uppercase">Lumina Reader v2.6</span>
       </div>
     </div>
   );

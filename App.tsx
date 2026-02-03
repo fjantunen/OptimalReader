@@ -15,7 +15,7 @@ const App: React.FC = () => {
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
   
   const [settings, setSettings] = useState<ReaderSettings>({
-    theme: Theme.ThisIsFine,
+    theme: Theme.Amber,
     font: ReaderFont.Clean,
     fontSize: 22,
     lineHeight: 1.6,
@@ -46,7 +46,6 @@ const App: React.FC = () => {
   const startPlayback = useCallback((startIndex: number) => {
     if (!synthRef.current || sentencesRef.current.length === 0) return;
     
-    // We cancel current speech but keep isPlayingRef true to prevent callbacks from stopping the engine
     synthRef.current.cancel();
     isPlayingRef.current = true;
     setIsPlaying(true);
@@ -80,8 +79,6 @@ const App: React.FC = () => {
       };
 
       utterance.onerror = (event) => {
-        // 'interrupted' happens when we call cancel() to skip or change speed.
-        // We only want to stop the UI state if it's a real error or not an intentional interruption.
         if (event.error !== 'interrupted' && isPlayingRef.current) {
           isPlayingRef.current = false;
           setIsPlaying(false);
@@ -133,15 +130,57 @@ const App: React.FC = () => {
       }
     }
 
-    // Update index immediately for UI feedback
     setCurrentSentenceIndex(targetIdx);
     setCurrentWordIndex(0);
     
-    // If we were playing, restart from the new position
     if (isPlayingRef.current) {
       startPlayback(targetIdx);
     }
   }, [currentSentenceIndex, startPlayback]);
+
+  const updateSettings = useCallback((newSettings: Partial<ReaderSettings>) => {
+    setSettings(prev => ({ ...prev, ...newSettings }));
+  }, []);
+
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts if user is typing in the input area
+      if (isEditing) return;
+
+      switch (e.code) {
+        case 'Space':
+          e.preventDefault();
+          handlePlayPause();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          handleSkipBlock('prev');
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          handleSkipBlock('next');
+          break;
+        case 'ArrowUp': {
+          e.preventDefault();
+          const nextUp = Math.round((settings.ttsSpeed + 0.2) * 10) / 10;
+          if (nextUp <= 3.0) updateSettings({ ttsSpeed: nextUp });
+          break;
+        }
+        case 'ArrowDown': {
+          e.preventDefault();
+          const nextDown = Math.round((settings.ttsSpeed - 0.2) * 10) / 10;
+          if (nextDown >= 0.5) updateSettings({ ttsSpeed: nextDown });
+          break;
+        }
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isEditing, handlePlayPause, handleSkipBlock, settings.ttsSpeed, updateSettings]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -149,10 +188,6 @@ const App: React.FC = () => {
       startPlayback(sIdx);
     }
   }, [settings.ttsSpeed]);
-
-  const updateSettings = (newSettings: Partial<ReaderSettings>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
-  };
 
   const progressPercent = useMemo(() => {
     if (sentencesRef.current.length === 0) return 0;
@@ -164,25 +199,25 @@ const App: React.FC = () => {
     [Theme.Light]: 'bg-white text-gray-900',
     [Theme.Sepia]: 'bg-[#f4ecd8] text-[#5b4636] sepia',
     [Theme.Dark]: 'bg-gray-950 text-gray-200 dark',
-    [Theme.ThisIsFine]: 'bg-[#ffcc80] text-[#4e342e] thisisfine',
+    [Theme.Amber]: 'bg-[#ffcc80] text-[#4e342e] amber',
   };
 
   const barBgClasses = {
     [Theme.Light]: 'bg-white border-t border-gray-200',
     [Theme.Sepia]: 'bg-[#f4ecd8] border-t border-[#e0d6c0]',
     [Theme.Dark]: 'bg-gray-950 border-t border-gray-800',
-    [Theme.ThisIsFine]: 'bg-[#ffb74d] border-t border-[#f57c00]',
+    [Theme.Amber]: 'bg-[#ffb74d] border-t border-[#f57c00]',
   }[settings.theme];
 
   const iconColor = {
-    [Theme.ThisIsFine]: 'text-[#bf360c]',
+    [Theme.Amber]: 'text-[#bf360c]',
     [Theme.Light]: 'text-indigo-600',
     [Theme.Sepia]: 'text-indigo-600',
     [Theme.Dark]: 'text-indigo-400',
   }[settings.theme];
 
   const playBtnColor = {
-    [Theme.ThisIsFine]: 'bg-[#d84315]',
+    [Theme.Amber]: 'bg-[#d84315]',
     [Theme.Light]: 'bg-indigo-600',
     [Theme.Sepia]: 'bg-indigo-600',
     [Theme.Dark]: 'bg-indigo-600',
@@ -224,7 +259,7 @@ const App: React.FC = () => {
               [Theme.Light]: 'bg-indigo-600',
               [Theme.Sepia]: 'bg-indigo-600',
               [Theme.Dark]: 'bg-indigo-500',
-              [Theme.ThisIsFine]: 'bg-[#d84315]',
+              [Theme.Amber]: 'bg-[#d84315]',
             }[settings.theme]}`}
             style={{ width: `${progressPercent}%` }}
           />
@@ -245,7 +280,7 @@ const App: React.FC = () => {
               <button 
                 onClick={() => handleSkipBlock('prev')}
                 className={`p-2 rounded-full hover:bg-black/5 transition-colors ${iconColor}`}
-                title="Previous Paragraph"
+                title="Previous Paragraph (Left Arrow)"
               >
                 <SkipBack className="w-5 h-5 fill-current" />
               </button>
@@ -256,7 +291,7 @@ const App: React.FC = () => {
                   if (newSpeed >= 0.5) updateSettings({ ttsSpeed: newSpeed });
                 }}
                 className={`p-2 rounded-full hover:bg-black/5 transition-colors ${iconColor}`}
-                title="Decrease Speed"
+                title="Decrease Speed (Down Arrow)"
               >
                 <Minus className="w-5 h-5" />
               </button>
@@ -264,7 +299,7 @@ const App: React.FC = () => {
               <button
                 onClick={handlePlayPause}
                 className={`p-3.5 md:p-4 rounded-2xl text-white shadow-lg transition-all active:scale-90 ${playBtnColor}`}
-                title={isPlaying ? "Pause" : "Play"}
+                title={isPlaying ? "Pause (Space)" : "Play (Space)"}
               >
                 {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-0.5" />}
               </button>
@@ -275,7 +310,7 @@ const App: React.FC = () => {
                   if (newSpeed <= 3.0) updateSettings({ ttsSpeed: newSpeed });
                 }}
                 className={`p-2 rounded-full hover:bg-black/5 transition-colors ${iconColor}`}
-                title="Increase Speed"
+                title="Increase Speed (Up Arrow)"
               >
                 <Plus className="w-5 h-5" />
               </button>
@@ -283,7 +318,7 @@ const App: React.FC = () => {
               <button 
                 onClick={() => handleSkipBlock('next')}
                 className={`p-2 rounded-full hover:bg-black/5 transition-colors ${iconColor}`}
-                title="Next Paragraph"
+                title="Next Paragraph (Right Arrow)"
               >
                 <SkipForward className="w-5 h-5 fill-current" />
               </button>
