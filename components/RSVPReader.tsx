@@ -54,43 +54,44 @@ const RSVPReader: React.FC<RSVPReaderProps> = ({ words, currentWordIndex, settin
       <div className="absolute left-1/2 top-6 w-[8px] h-[8px] bg-red-600/60 -translate-x-1/2 rounded-full shadow-sm" />
       <div className="absolute left-1/2 bottom-6 w-[8px] h-[8px] bg-red-600/60 -translate-x-1/2 rounded-full shadow-sm" />
 
-      <div className={`relative flex items-center justify-center w-full px-4 md:px-8 ${fontClass}`}>
+      <div className={`relative flex items-center justify-center w-full px-2 md:px-8 ${fontClass}`}>
         
-        {/* Previous Words (Context) */}
-        <div className="absolute right-[56%] flex items-center gap-4 justify-end transition-all duration-100 pointer-events-none">
-          <span className="opacity-5 blur-[2px] text-lg md:text-xl lg:text-2xl hidden sm:inline">{prevWords[0]}</span>
-          <span className="opacity-20 blur-[1px] text-xl md:text-2xl lg:text-3xl">{prevWords[1]}</span>
+        {/* Previous Words (Context) - Hidden on Mobile */}
+        <div className="absolute right-[60%] md:right-[56%] flex items-center gap-2 md:gap-4 justify-end transition-all duration-100 pointer-events-none">
+          <span className="opacity-5 blur-[2px] text-lg md:text-xl lg:text-2xl hidden md:inline">{prevWords[0]}</span>
+          <span className="opacity-20 blur-[1px] text-xl md:text-2xl lg:text-3xl hidden sm:inline">{prevWords[1]}</span>
         </div>
 
         {/* Current Word with ORP */}
-        <div className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight flex items-center shrink-0 z-10">
-          <div className="flex justify-end w-[160px] md:w-[280px] lg:w-[350px] pr-[0.02em] whitespace-nowrap">
+        <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight flex items-center justify-center shrink-0 z-10 w-full max-w-4xl">
+          {/* Using flex-1 on mobile allows the prefix/suffix to shrink/grow properly within the viewport */}
+          <div className="flex justify-end flex-1 sm:flex-none sm:w-[160px] md:w-[280px] lg:w-[350px] pr-[0.02em] whitespace-nowrap overflow-hidden">
             <span className="opacity-60 transition-opacity duration-75">{prefix}</span>
           </div>
           <div className="flex justify-center shrink-0 min-w-[0.6em]">
-            <span className="rsvp-orp scale-125 drop-shadow-md brightness-125 font-black">{pivot}</span>
+            <span className="rsvp-orp scale-110 sm:scale-125 drop-shadow-md brightness-125 font-black">{pivot}</span>
           </div>
-          <div className="flex justify-start w-[160px] md:w-[280px] lg:w-[350px] pl-[0.02em] whitespace-nowrap">
+          <div className="flex justify-start flex-1 sm:flex-none sm:w-[160px] md:w-[280px] lg:w-[350px] pl-[0.02em] whitespace-nowrap overflow-hidden">
             <span className="opacity-60 transition-opacity duration-75">{suffix}</span>
           </div>
         </div>
 
-        {/* Next Words (Context) */}
-        <div className="absolute left-[56%] flex items-center gap-4 justify-start transition-all duration-100 pointer-events-none">
-          <span className="opacity-20 blur-[1px] text-xl md:text-2xl lg:text-3xl">{nextWords[0]}</span>
-          <span className="opacity-5 blur-[2px] text-lg md:text-xl lg:text-2xl hidden sm:inline">{nextWords[1]}</span>
+        {/* Next Words (Context) - Hidden on Mobile */}
+        <div className="absolute left-[60%] md:left-[56%] flex items-center gap-2 md:gap-4 justify-start transition-all duration-100 pointer-events-none">
+          <span className="opacity-20 blur-[1px] text-xl md:text-2xl lg:text-3xl hidden sm:inline">{nextWords[0]}</span>
+          <span className="opacity-5 blur-[2px] text-lg md:text-xl lg:text-2xl hidden md:inline">{nextWords[1]}</span>
         </div>
       </div>
 
       {/* Mode & WPM Indicators */}
-      <div className="absolute top-4 left-8 md:left-12 opacity-60 text-[10px] font-black uppercase tracking-[0.4em] pointer-events-none flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+      <div className="absolute top-2 md:top-4 left-4 md:left-12 opacity-60 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.4em] pointer-events-none flex items-center gap-2">
+        <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-red-500 animate-pulse"></span>
         Focus Mode
       </div>
-      <div className="absolute top-4 right-8 md:right-12 opacity-60 text-[10px] font-black uppercase tracking-[0.4em] pointer-events-none">
+      <div className="absolute top-2 md:top-4 right-4 md:right-12 opacity-60 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.4em] pointer-events-none">
         {wpm} <span className="opacity-50">WPM</span>
       </div>
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-30 text-[9px] font-bold uppercase tracking-[0.2em] pointer-events-none">
+      <div className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 opacity-30 text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em] pointer-events-none whitespace-nowrap">
         {settings.ttsSpeed.toFixed(1)}x Speed
       </div>
     </div>
